@@ -43,17 +43,27 @@ public class TaskAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
 
         if (convertView == null) {
-            convertView = mLayoutInflater.inflate(android.R.layout.simple_list_item_2, null);
+            // simple_list_item_2はタイトルとサブタイトルの2つがあるセル
+            //convertView = mLayoutInflater.inflate(android.R.layout.simple_list_item_2, null);
+            convertView = mLayoutInflater.inflate(R.layout.list_item_3, null);
+
         }
 
-        TextView textView1 = (TextView) convertView.findViewById(android.R.id.text1);
-        TextView textView2 = (TextView) convertView.findViewById(android.R.id.text2);
+//        TextView textView1 = (TextView) convertView.findViewById(android.R.id.text1);
+//        TextView textView2 = (TextView) convertView.findViewById(android.R.id.text2);
+        TextView textView1 = (TextView) convertView.findViewById(R.id.title);
+        TextView textView2 = (TextView) convertView.findViewById(R.id.date);
+        TextView textView3 = (TextView) convertView.findViewById(R.id.category);    // 追加。このIDでいいのか？
 
         textView1.setText(mTaskList.get(position).getTitle());
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.JAPANESE);
         Date date = mTaskList.get(position).getDate();
         textView2.setText(simpleDateFormat.format(date));
+
+        // 追加
+        //TextView textView3 = (TextView) convertView.findViewById(android.R.id.text1);
+        textView3.setText(mTaskList.get(position).getCategory());
 
         return convertView;
     }

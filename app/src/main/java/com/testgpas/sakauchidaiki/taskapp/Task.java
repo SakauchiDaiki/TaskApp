@@ -12,6 +12,7 @@ import io.realm.annotations.PrimaryKey;
 
 public class Task extends RealmObject implements Serializable {
     private String title; // タイトル
+    private String category; // カテゴリ(追加)
     private String contents; // 内容
     private Date date; // 日時
 
@@ -19,12 +20,19 @@ public class Task extends RealmObject implements Serializable {
     @PrimaryKey
     private int id;
 
-    public String getTitle() {
-        return title;
-    }
+    public String getTitle() { return title; }
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    // 追加
+    public String getCategory() {
+        return category;
+    }
+    // 追加
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     public String getContents() {

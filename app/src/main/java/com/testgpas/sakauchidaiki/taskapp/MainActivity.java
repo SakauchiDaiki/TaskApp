@@ -8,16 +8,21 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
+
+import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 import io.realm.Sort;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     public final static String EXTRA_TASK = "com.testgpas.sakauchidaiki.taskapp.TASK";
 
     private Realm mRealm;
@@ -29,6 +34,9 @@ public class MainActivity extends AppCompatActivity {
     };
     private ListView mListView;
     private TaskAdapter mTaskAdapter;
+
+    // カテゴリ検索用
+    EditText mEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +80,6 @@ public class MainActivity extends AppCompatActivity {
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
 
                 // タスクを削除する
-
                 final Task task = (Task) parent.getAdapter().getItem(position);
 
                 // ダイアログを表示する
@@ -114,6 +121,12 @@ public class MainActivity extends AppCompatActivity {
         });
 
         reloadListView();
+
+        // ボタンリスナーを用意
+        Button btnSearch = (Button) findViewById(R.id.btnSearch);
+        btnSearch.setOnClickListener(this);
+
+        mEditText = (EditText)findViewById(R.id.cateSearch);
     }
 
     private void reloadListView() {
@@ -126,6 +139,32 @@ public class MainActivity extends AppCompatActivity {
         // 表示を更新するために、アダプターにデータが変更されたことを知らせる
         mTaskAdapter.notifyDataSetChanged();
     }
+
+    @Override
+    public void onClick(View v) {
+
+        Log.v("UI_PARTS", "ボタンをタップしました");
+
+        // 検索バーに文字が入力されていなければ全部表示
+        if (mEditText.getText().toString().equals("")) {
+            reloadListView();
+        }
+        // 検索バーに文字が入っていたら、カテゴリと一致するタスクを表示
+        else {
+
+            // Realmデータベースから、「全てのデータを取得して新しい日時順に並べた結果」を取得
+            RealmResults<Task> taskRealmResults = mRealm.where(Task.class).equalTo("category", mEditText.getText().toString()).findAllSorted("date", Sort.DESCENDING);
+            // 上記の結果を、TaskList としてセットする
+            mTaskAdapter.setTaskList(mRealm.copyFromRealm(taskRealmResults));
+            // TaskのListView用のアダプタに渡す
+            mListView.setAdapter(mTaskAdapter);
+            // 表示を更新するために、アダプターにデータが変更されたことを知らせる
+            mTaskAdapter.notifyDataSetChanged();
+
+        }
+    }
+
+
 
     @Override
     protected void onDestroy() {
